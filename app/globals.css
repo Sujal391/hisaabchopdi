@@ -1,26 +1,568 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
+/* ============================================================
+   THEME INLINE — Tailwind v4 design token registration
+   Every CSS custom property defined below is mapped here so
+   Tailwind utility classes (bg-*, text-*, border-*, etc.)
+   automatically consume the token from :root.
+   ============================================================ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* --- Core palette tokens ---------------------------------- */
+  --color-background:         var(--background);
+  --color-foreground:         var(--foreground);
+  --color-card:               var(--card);
+  --color-card-foreground:    var(--card-foreground);
+  --color-popover:            var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary:            var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary:          var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted:              var(--muted);
+  --color-muted-foreground:   var(--muted-foreground);
+  --color-accent:             var(--accent);
+  --color-accent-foreground:  var(--accent-foreground);
+  --color-destructive:        var(--destructive);
+  --color-border:             var(--border);
+  --color-input:              var(--input);
+  --color-ring:               var(--ring);
+
+  /* --- Hover surface tokens (use bg-hover-*, border-hover-*) */
+  --color-hover-muted:        var(--hover-muted);
+  --color-hover-accent:       var(--hover-accent);
+  --color-hover-primary:      var(--hover-primary);
+  --color-hover-destructive:  var(--hover-destructive);
+  --color-hover-card:         var(--hover-card);
+
+  /* --- Status semantic tokens -------------------------------- */
+  --color-status-not-started:           var(--status-not-started);
+  --color-status-not-started-fg:        var(--status-not-started-fg);
+  --color-status-not-started-bg:        var(--status-not-started-bg);
+
+  --color-status-in-progress:           var(--status-in-progress);
+  --color-status-in-progress-fg:        var(--status-in-progress-fg);
+  --color-status-in-progress-bg:        var(--status-in-progress-bg);
+
+  --color-status-waiting:               var(--status-waiting);
+  --color-status-waiting-fg:            var(--status-waiting-fg);
+  --color-status-waiting-bg:            var(--status-waiting-bg);
+
+  --color-status-completed:             var(--status-completed);
+  --color-status-completed-fg:          var(--status-completed-fg);
+  --color-status-completed-bg:          var(--status-completed-bg);
+
+  --color-status-cancelled:             var(--status-cancelled);
+  --color-status-cancelled-fg:          var(--status-cancelled-fg);
+  --color-status-cancelled-bg:          var(--status-cancelled-bg);
+
+  --color-status-reopened:              var(--status-reopened);
+  --color-status-reopened-fg:           var(--status-reopened-fg);
+  --color-status-reopened-bg:           var(--status-reopened-bg);
+
+  /* --- Success / Warning / Info utility tokens --------------- */
+  --color-success:            var(--success);
+  --color-success-fg:         var(--success-fg);
+  --color-success-bg:         var(--success-bg);
+  --color-warning:            var(--warning);
+  --color-warning-fg:         var(--warning-fg);
+  --color-warning-bg:         var(--warning-bg);
+  --color-info:               var(--info);
+  --color-info-fg:            var(--info-fg);
+  --color-info-bg:            var(--info-bg);
+
+  /* --- Sidebar tokens --------------------------------------- */
+  --color-sidebar:                      var(--sidebar);
+  --color-sidebar-foreground:           var(--sidebar-foreground);
+  --color-sidebar-primary:              var(--sidebar-primary);
+  --color-sidebar-primary-foreground:   var(--sidebar-primary-foreground);
+  --color-sidebar-accent:               var(--sidebar-accent);
+  --color-sidebar-accent-foreground:    var(--sidebar-accent-foreground);
+  --color-sidebar-border:               var(--sidebar-border);
+  --color-sidebar-ring:                 var(--sidebar-ring);
+
+  /* --- Chart tokens ----------------------------------------- */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* --- Typography tokens ------------------------------------ */
+  --font-sans:    var(--font-sans);
+  --font-mono:    var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+
+  /* --- Radius scale ----------------------------------------- */
+  --radius-sm:  calc(var(--radius) * 0.6);
+  --radius-md:  calc(var(--radius) * 0.8);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* --- Transition token ------------------------------------- */
+  --transition-base: var(--ease-transition);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ============================================================
+   :root — Light mode token values
+   ONLY CHANGE VALUES HERE to re-skin the entire application.
+   ============================================================ */
+:root {
+  /* --- Core surfaces ---------------------------------------- */
+  --background:            oklch(1 0 0);
+  --foreground:            oklch(0.145 0 0);
+  --card:                  oklch(1 0 0);
+  --card-foreground:       oklch(0.145 0 0);
+  --popover:               oklch(1 0 0);
+  --popover-foreground:    oklch(0.145 0 0);
+
+  /* --- Brand / Interactive ---------------------------------- */
+  --primary:               oklch(0.205 0 0);
+  --primary-foreground:    oklch(0.985 0 0);
+  --secondary:             oklch(0.97 0 0);
+  --secondary-foreground:  oklch(0.205 0 0);
+
+  /* --- Neutral surfaces ------------------------------------- */
+  --muted:                 oklch(0.97 0 0);
+  --muted-foreground:      oklch(0.556 0 0);
+  --accent:                oklch(0.97 0 0);
+  --accent-foreground:     oklch(0.205 0 0);
+
+  /* --- Semantic -------------------------------------------- */
+  --destructive:           oklch(0.577 0.245 27.325);
+
+  /* --- Borders & Inputs ------------------------------------- */
+  --border:                oklch(0.922 0 0);
+  --input:                 oklch(0.922 0 0);
+  --ring:                  oklch(0.708 0 0);
+
+  /* --- Hover surfaces --------------------------------------- */
+  /* Applied via bg-hover-muted, bg-hover-accent, etc.          */
+  --hover-muted:           oklch(0.945 0 0);   /* slightly darker than --muted */
+  --hover-accent:          oklch(0.945 0 0);   /* matches hover-muted for neutrals */
+  --hover-primary:         oklch(0.32 0 0);    /* slightly lighter than --primary */
+  --hover-destructive:     oklch(0.52 0.245 27.325);
+  --hover-card:            oklch(0.985 0 0);   /* subtle card hover */
+
+  /* --- Status: NOT STARTED (amber / yellow) ---------------- */
+  --status-not-started:    oklch(0.769 0.188 70.08);
+  --status-not-started-fg: oklch(0.4 0.12 70.08);
+  --status-not-started-bg: oklch(0.97 0.04 70.08);
+
+  /* --- Status: IN PROGRESS (blue) -------------------------- */
+  --status-in-progress:    oklch(0.6 0.19 250);
+  --status-in-progress-fg: oklch(0.3 0.14 250);
+  --status-in-progress-bg: oklch(0.96 0.03 250);
+
+  /* --- Status: WAITING (orange) ---------------------------- */
+  --status-waiting:        oklch(0.7 0.2 55);
+  --status-waiting-fg:     oklch(0.38 0.14 55);
+  --status-waiting-bg:     oklch(0.97 0.035 55);
+
+  /* --- Status: COMPLETED (green) --------------------------- */
+  --status-completed:      oklch(0.6 0.18 145);
+  --status-completed-fg:   oklch(0.3 0.13 145);
+  --status-completed-bg:   oklch(0.96 0.03 145);
+
+  /* --- Status: CANCELLED (red) ----------------------------- */
+  --status-cancelled:      oklch(0.577 0.245 27.325);
+  --status-cancelled-fg:   oklch(0.35 0.18 27.325);
+  --status-cancelled-bg:   oklch(0.97 0.03 27.325);
+
+  /* --- Status: REOPENED (purple / violet) ------------------ */
+  --status-reopened:       oklch(0.62 0.2 295);
+  --status-reopened-fg:    oklch(0.33 0.15 295);
+  --status-reopened-bg:    oklch(0.97 0.03 295);
+
+  /* --- Utility: Success ------------------------------------ */
+  --success:               oklch(0.6 0.18 145);
+  --success-fg:            oklch(0.3 0.13 145);
+  --success-bg:            oklch(0.96 0.03 145);
+
+  /* --- Utility: Warning ------------------------------------ */
+  --warning:               oklch(0.769 0.188 70.08);
+  --warning-fg:            oklch(0.4 0.12 70.08);
+  --warning-bg:            oklch(0.97 0.04 70.08);
+
+  /* --- Utility: Info --------------------------------------- */
+  --info:                  oklch(0.6 0.19 250);
+  --info-fg:               oklch(0.3 0.14 250);
+  --info-bg:               oklch(0.96 0.03 250);
+
+  /* --- Charts --------------------------------------------- */
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+
+  /* --- Radius -------------------------------------------- */
+  --radius: 0.625rem;
+
+  /* --- Sidebar ------------------------------------------- */
+  --sidebar:                    oklch(0.985 0 0);
+  --sidebar-foreground:         oklch(0.145 0 0);
+  --sidebar-primary:            oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent:             oklch(0.945 0 0);
+  --sidebar-accent-foreground:  oklch(0.205 0 0);
+  --sidebar-border:             oklch(0.922 0 0);
+  --sidebar-ring:               oklch(0.708 0 0);
+
+  /* --- Transition ease ------------------------------------ */
+  --ease-transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================
+   .dark — Dark mode overrides
+   All tokens redefined for dark mode. No per-component dark
+   overrides should be needed.
+   ============================================================ */
+.dark {
+  --background:            oklch(0.145 0 0);
+  --foreground:            oklch(0.985 0 0);
+  --card:                  oklch(0.205 0 0);
+  --card-foreground:       oklch(0.985 0 0);
+  --popover:               oklch(0.205 0 0);
+  --popover-foreground:    oklch(0.985 0 0);
+  --primary:               oklch(0.922 0 0);
+  --primary-foreground:    oklch(0.205 0 0);
+  --secondary:             oklch(0.269 0 0);
+  --secondary-foreground:  oklch(0.985 0 0);
+  --muted:                 oklch(0.269 0 0);
+  --muted-foreground:      oklch(0.708 0 0);
+  --accent:                oklch(0.269 0 0);
+  --accent-foreground:     oklch(0.985 0 0);
+  --destructive:           oklch(0.704 0.191 22.216);
+  --border:                oklch(1 0 0 / 10%);
+  --input:                 oklch(1 0 0 / 15%);
+  --ring:                  oklch(0.556 0 0);
+
+  /* --- Hover surfaces (dark) -------------------------------- */
+  --hover-muted:           oklch(0.30 0 0);
+  --hover-accent:          oklch(0.30 0 0);
+  --hover-primary:         oklch(0.86 0 0);
+  --hover-destructive:     oklch(0.75 0.191 22.216);
+  --hover-card:            oklch(0.23 0 0);
+
+  /* --- Status colors (dark) - same hue, adjusted lightness - */
+  --status-not-started:    oklch(0.769 0.188 70.08);
+  --status-not-started-fg: oklch(0.9 0.06 70.08);
+  --status-not-started-bg: oklch(0.28 0.05 70.08);
+
+  --status-in-progress:    oklch(0.65 0.19 250);
+  --status-in-progress-fg: oklch(0.88 0.06 250);
+  --status-in-progress-bg: oklch(0.24 0.05 250);
+
+  --status-waiting:        oklch(0.72 0.2 55);
+  --status-waiting-fg:     oklch(0.9 0.06 55);
+  --status-waiting-bg:     oklch(0.27 0.05 55);
+
+  --status-completed:      oklch(0.65 0.18 145);
+  --status-completed-fg:   oklch(0.88 0.06 145);
+  --status-completed-bg:   oklch(0.24 0.05 145);
+
+  --status-cancelled:      oklch(0.704 0.191 22.216);
+  --status-cancelled-fg:   oklch(0.9 0.06 27.325);
+  --status-cancelled-bg:   oklch(0.26 0.05 27.325);
+
+  --status-reopened:       oklch(0.68 0.2 295);
+  --status-reopened-fg:    oklch(0.88 0.06 295);
+  --status-reopened-bg:    oklch(0.25 0.05 295);
+
+  --success:               oklch(0.65 0.18 145);
+  --success-fg:            oklch(0.88 0.06 145);
+  --success-bg:            oklch(0.24 0.05 145);
+
+  --warning:               oklch(0.769 0.188 70.08);
+  --warning-fg:            oklch(0.9 0.06 70.08);
+  --warning-bg:            oklch(0.28 0.05 70.08);
+
+  --info:                  oklch(0.65 0.19 250);
+  --info-fg:               oklch(0.88 0.06 250);
+  --info-bg:               oklch(0.24 0.05 250);
+
+  /* --- Charts -------------------------------------------- */
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+
+  /* --- Sidebar (dark) ------------------------------------ */
+  --sidebar:                    oklch(0.205 0 0);
+  --sidebar-foreground:         oklch(0.985 0 0);
+  --sidebar-primary:            oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent:             oklch(0.269 0 0);
+  --sidebar-accent-foreground:  oklch(0.985 0 0);
+  --sidebar-border:             oklch(1 0 0 / 10%);
+  --sidebar-ring:               oklch(0.556 0 0);
+}
+
+/* ============================================================
+   BASE LAYER — Global element styles & hover behaviours
+   These rules apply universally so no per-component hover
+   class overrides are ever needed.
+   ============================================================ */
+@layer base {
+  /* --- Reset / defaults ------------------------------------- */
+  * {
+    @apply border-border outline-ring/50;
+    transition-property: color, background-color, border-color, box-shadow, opacity;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html {
+    @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* --- Heading hierarchy ------------------------------------ */
+  /* Use these tags directly — colour, weight, size all set here */
+  h1 {
+    @apply text-foreground font-semibold tracking-tight;
+    font-size: 1.75rem;
+    line-height: 2rem;
+  }
+  h2 {
+    @apply text-foreground font-semibold tracking-tight;
+    font-size: 1.375rem;
+    line-height: 1.875rem;
+  }
+  h3 {
+    @apply text-foreground font-medium;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+  h4 {
+    @apply text-foreground font-medium;
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+  p {
+    @apply text-foreground;
+    line-height: 1.6;
+  }
+  small {
+    @apply text-muted-foreground text-sm;
+  }
+  label {
+    @apply text-foreground text-sm font-medium;
+  }
+
+  /* --- Links ------------------------------------------------ */
+  a {
+    @apply text-foreground underline-offset-4;
+  }
+  a:hover {
+    @apply text-primary underline;
+  }
+
+  /* --- Interactive element hover surfaces ------------------- */
+  /* Any element with these roles gets hover automatically      */
+  button:not([disabled]):not([data-variant="link"]):not([data-variant="ghost"]) {
+    /* shadcn Button handles its own hover variants; this is a safety net */
+  }
+
+  /* --- Interactive row / list-item hover -------------------- */
+  /* Add class `interactive-row` to any clickable table row or  */
+  /* list item — hover state comes from root, nothing extra needed */
+  .interactive-row {
+    @apply cursor-pointer;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .interactive-row:hover {
+    background-color: var(--hover-muted);
+  }
+
+  /* --- Card hover ------------------------------------------- */
+  /* Add class `interactive-card` to clickable cards            */
+  .interactive-card {
+    @apply cursor-pointer;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .interactive-card:hover {
+    background-color: var(--hover-card);
+    box-shadow: 0 2px 8px oklch(0 0 0 / 6%);
+    border-color: var(--ring);
+  }
+
+  /* --- Nav-item hover --------------------------------------- */
+  /* Sidebar / mobile nav items                                 */
+  .nav-item {
+    @apply rounded-lg cursor-pointer;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-item:hover:not(.nav-item-active) {
+    background-color: var(--hover-muted);
+    color: var(--accent-foreground);
+  }
+  .nav-item-active {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+    font-weight: 500;
+  }
+
+  /* --- Icon button hover ------------------------------------ */
+  .icon-btn {
+    @apply rounded-lg p-1.5 cursor-pointer;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .icon-btn:hover {
+    background-color: var(--hover-muted);
+  }
+
+  /* --- Input focus ------------------------------------------ */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px oklch(from var(--ring) l c h / 30%);
+    border-color: var(--ring);
+  }
+
+  /* --- Selection -------------------------------------------- */
+  ::selection {
+    background-color: oklch(from var(--primary) l c h / 15%);
+    color: var(--foreground);
+  }
+
+  /* --- Scrollbar ------------------------------------------- */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============================================================
+   STATUS BADGE UTILITIES
+   Consume via className="status-badge status-not-started" etc.
+   All colours come from :root — zero per-component overrides.
+   ============================================================ */
+@layer components {
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3125rem;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    white-space: nowrap;
+    border-width: 1px;
+    border-style: solid;
+  }
+
+  .status-not-started {
+    background-color: var(--status-not-started-bg);
+    color: var(--status-not-started-fg);
+    border-color: oklch(from var(--status-not-started) l c h / 30%);
+  }
+  .status-in-progress {
+    background-color: var(--status-in-progress-bg);
+    color: var(--status-in-progress-fg);
+    border-color: oklch(from var(--status-in-progress) l c h / 30%);
+  }
+  .status-waiting {
+    background-color: var(--status-waiting-bg);
+    color: var(--status-waiting-fg);
+    border-color: oklch(from var(--status-waiting) l c h / 30%);
+  }
+  .status-completed {
+    background-color: var(--status-completed-bg);
+    color: var(--status-completed-fg);
+    border-color: oklch(from var(--status-completed) l c h / 30%);
+  }
+  .status-cancelled {
+    background-color: var(--status-cancelled-bg);
+    color: var(--status-cancelled-fg);
+    border-color: oklch(from var(--status-cancelled) l c h / 30%);
+  }
+  .status-reopened {
+    background-color: var(--status-reopened-bg);
+    color: var(--status-reopened-fg);
+    border-color: oklch(from var(--status-reopened) l c h / 30%);
+  }
+
+  /* --------------------------------------------------------- */
+  /* PAGE SECTION UTILITIES                                     */
+  /* --------------------------------------------------------- */
+
+  /* Consistent page-level heading */
+  .page-title {
+    @apply text-foreground font-semibold tracking-tight;
+    font-size: 1.375rem;
+    line-height: 1.875rem;
+  }
+
+  /* Consistent page-level subtitle / description */
+  .page-description {
+    @apply text-muted-foreground text-sm;
+    line-height: 1.5;
+  }
+
+  /* Section label (e.g., form section headers) */
+  .section-label {
+    @apply text-foreground text-xs font-semibold uppercase tracking-widest;
+  }
+
+  /* Caption / helper text */
+  .text-caption {
+    @apply text-muted-foreground text-xs;
+    line-height: 1.4;
+  }
+
+  /* Monospaced reference text (entry IDs, serial numbers etc.) */
+  .text-mono {
+    @apply font-mono text-foreground;
+  }
+
+  /* --------------------------------------------------------- */
+  /* LAYOUT UTILITIES                                           */
+  /* --------------------------------------------------------- */
+  .content-area {
+    @apply flex-1 overflow-y-auto;
+    background-color: var(--background);
+  }
+
+  .page-container {
+    @apply mx-auto w-full max-w-screen-xl px-4 py-6 sm:px-6 lg:px-8;
+  }
+
+  /* --------------------------------------------------------- */
+  /* DIVIDER                                                    */
+  /* --------------------------------------------------------- */
+  .divider {
+    border-top: 1px solid var(--border);
+    margin: 0;
+  }
 }
