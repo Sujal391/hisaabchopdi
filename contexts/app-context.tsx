@@ -86,8 +86,38 @@ function now(): string {
 
 // ── Provider ───────────────────────────────────────────────────────────────
 
+const DEFAULT_ADMIN_USER: SessionUser = {
+  id: "admin-1",
+  name: "Admin",
+  role: "ADMIN",
+};
+
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<SessionUser | null>(null);
+  const [currentUser, setCurrentUserState] = useState<SessionUser | null>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("entrybook_session");
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          // ignore
+        }
+      }
+    }
+    return DEFAULT_ADMIN_USER;
+  });
+
+  const setCurrentUser = useCallback((user: SessionUser | null) => {
+    setCurrentUserState(user);
+    if (typeof window !== "undefined") {
+      if (user) {
+        localStorage.setItem("entrybook_session", JSON.stringify(user));
+      } else {
+        localStorage.removeItem("entrybook_session");
+      }
+    }
+  }, []);
+
   const [entries, setEntries] = useState<ServiceEntry[]>(mockServiceEntries);
   const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
   const [employees, setEmployees] = useState<Employee[]>(mockEmployees);

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Plus, Users } from "lucide-react";
+import { Eye, Plus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -11,23 +10,34 @@ import { PageHeader } from "@/components/common/page-header";
 import { SearchInput } from "@/components/common/search-input";
 import { CustomerAvatar } from "@/components/common/customer-avatar";
 import { EmptyState } from "@/components/common/empty-state";
+import { DataPagination } from "@/components/common/data-pagination";
+import { ViewCustomerModal } from "@/components/features/view-customer-modal";
+import { ViewEntryModal } from "@/components/features/view-entry-modal";
 import { useApp } from "@/contexts/app-context";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useToast } from "@/components/common/toast-provider";
 import { formatDate } from "@/lib/format";
+
+const PAGE_SIZE = 10;
 
 export default function CustomersPage() {
   const { customers, entries, createCustomer } = useApp();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [addOpen, setAddOpen] = useState(false);
+  const [viewCustomerId, setViewCustomerId] = useState<string | null>(null);
+  const [viewEntryId, setViewEntryId] = useState<string | null>(null);
+
   const [form, setForm] = useState({ name: "", mobile: "", email: "", address: "" });
   const debouncedSearch = useDebounce(search, 250);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filtered = customers.filter((c) => {
     const q = debouncedSearch.toLowerCase();
     return !q || c.name.toLowerCase().includes(q) || c.mobile.includes(q);
   });
+
+  const paginatedData = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -58,15 +68,15 @@ export default function CustomersPage() {
 
       <SearchInput
         value={search}
-        onChange={setSearch}
+        onChange={(v) => { setSearch(v); setCurrentPage(1); }}
         placeholder="Search by name or mobile…"
-        className="max-w-sm"
+        className="w-full"
       />
 
       {filtered.length === 0 ? (
         <EmptyState icon={Users} title="No customers found" description="Add your first customer to get started." />
       ) : (
-        <div className="rounded-xl border overflow-hidden">
+        <div className="rounded-xl border overflow-hidden bg-background">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/50">
@@ -78,10 +88,14 @@ export default function CustomersPage() {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {filtered.map((customer) => {
+              {paginatedData.map((customer) => {
                 const custEntries = entries.filter((e) => e.customerId === customer.id);
                 return (
-                  <tr key={customer.id} className="interactive-row">
+                  <tr
+                    key={customer.id}
+                    className="interactive-row cursor-pointer"
+                    onClick={() => setViewCustomerId(customer.id)}
+                  >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <CustomerAvatar name={customer.name} size="sm" />
@@ -95,8 +109,15 @@ export default function CustomersPage() {
                     <td className="px-4 py-3 hidden md:table-cell text-sm text-muted-foreground">{custEntries.length}</td>
                     <td className="px-4 py-3 hidden lg:table-cell text-caption">{formatDate(customer.createdAt)}</td>
                     <td className="px-4 py-3 text-right">
-                      <Button variant="ghost" size="xs" asChild>
-                        <Link href={`/admin/customers/${customer.id}`}>View</Link>
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setViewCustomerId(customer.id);
+                        }}
+                      >
+                        <Eye className="size-4" />
                       </Button>
                     </td>
                   </tr>
@@ -104,41 +125,90 @@ export default function CustomersPage() {
               })}
             </tbody>
           </table>
+          <DataPagination
+            currentPage={currentPage}
+            totalItems={filtered.length}
+            pageSize={PAGE_SIZE}
+            onPageChange={setCurrentPage}
+          />
         </div>
       )}
 
-      {/* Add Customer Dialog */}
+      {/* Add Customer Dialog — Single column grid layout with full width fields */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Add Customer</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleAdd} className="space-y-4 py-2">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5">
+            <div className="grid grid-cols-1 gap-4">
+              <div className="space-y-1.5 w-full">
                 <Label htmlFor="cust-name">Name *</Label>
-                <Input id="cust-name" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} placeholder="Full name" required />
+                <Input
+                  id="cust-name"
+                  value={form.name}
+                  onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                  placeholder="Full name"
+                  className="w-full"
+                  required
+                />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 w-full">
                 <Label htmlFor="cust-mobile">Mobile *</Label>
-                <Input id="cust-mobile" type="tel" value={form.mobile} onChange={(e) => setForm((p) => ({ ...p, mobile: e.target.value }))} placeholder="10-digit number" required />
+                <Input
+                  id="cust-mobile"
+                  type="tel"
+                  value={form.mobile}
+                  onChange={(e) => setForm((p) => ({ ...p, mobile: e.target.value }))}
+                  placeholder="10-digit number"
+                  className="w-full"
+                  required
+                />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 w-full">
                 <Label htmlFor="cust-email">Email</Label>
-                <Input id="cust-email" type="email" value={form.email} onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))} placeholder="Optional" />
+                <Input
+                  id="cust-email"
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                  placeholder="Optional"
+                  className="w-full"
+                />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 w-full">
                 <Label htmlFor="cust-address">Address</Label>
-                <Input id="cust-address" value={form.address} onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))} placeholder="Optional" />
+                <Input
+                  id="cust-address"
+                  value={form.address}
+                  onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
+                  placeholder="Optional"
+                  className="w-full"
+                />
               </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="mt-4">
               <Button type="button" variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
               <Button type="submit">Add Customer</Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* View Customer Dialog */}
+      <ViewCustomerModal
+        open={!!viewCustomerId}
+        onOpenChange={(open) => !open && setViewCustomerId(null)}
+        customerId={viewCustomerId}
+        onSelectEntry={(entryId) => setViewEntryId(entryId)}
+      />
+
+      {/* View Entry Dialog from Customer History */}
+      <ViewEntryModal
+        open={!!viewEntryId}
+        onOpenChange={(open) => !open && setViewEntryId(null)}
+        entryId={viewEntryId}
+      />
     </div>
   );
 }

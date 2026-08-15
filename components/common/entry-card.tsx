@@ -11,10 +11,11 @@ import type { ServiceEntry } from "@/types";
 interface EntryCardProps {
   entry: ServiceEntry;
   /** Base path for the detail link, e.g. "/admin" or "/employee" */
-  basePath: string;
+  basePath?: string;
   /** Show the Take Work button for NOT_STARTED entries */
   showTakeWork?: boolean;
   onTakeWork?: (entryId: string) => void;
+  onView?: (entryId: string) => void;
   className?: string;
 }
 
@@ -27,6 +28,7 @@ export function EntryCard({
   basePath,
   showTakeWork = false,
   onTakeWork,
+  onView,
   className,
 }: EntryCardProps) {
   return (
@@ -43,7 +45,7 @@ export function EntryCard({
             {entry.entryNumber}
           </span>
           <span className="text-caption truncate">
-            {formatDeviceType(entry.deviceType)}
+            {entry.deviceType === "OTHER" && entry.customDeviceType ? entry.customDeviceType : formatDeviceType(entry.deviceType)}
           </span>
         </div>
         <StatusBadge status={entry.status} />
@@ -89,12 +91,19 @@ export function EntryCard({
               Take Work
             </Button>
           )}
-          <Button size="sm" variant="outline" asChild>
-            <Link href={`${basePath}/entries/${entry.id}`}>
+          {onView ? (
+            <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); onView(entry.id); }}>
               <Wrench className="size-3.5" aria-hidden />
               View
-            </Link>
-          </Button>
+            </Button>
+          ) : (
+            <Button size="sm" variant="outline" asChild>
+              <Link href={`${basePath}/entries/${entry.id}`}>
+                <Wrench className="size-3.5" aria-hidden />
+                View
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
 

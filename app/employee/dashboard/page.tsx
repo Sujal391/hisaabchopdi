@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/common/page-header";
 import { EntryCard } from "@/components/common/entry-card";
 import { EmptyState } from "@/components/common/empty-state";
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
+import { ViewEntryModal } from "@/components/features/view-entry-modal";
 import { useApp } from "@/contexts/app-context";
 import { useToast } from "@/components/common/toast-provider";
 import { isToday } from "date-fns";
@@ -17,6 +18,7 @@ export default function EmployeeDashboardPage() {
   const { entries, currentUser, takeWork } = useApp();
   const { toast } = useToast();
   const [confirmEntryId, setConfirmEntryId] = useState<string | null>(null);
+  const [viewEntryId, setViewEntryId] = useState<string | null>(null);
 
   if (!currentUser) return null;
 
@@ -132,9 +134,10 @@ export default function EmployeeDashboardPage() {
                 <EntryCard
                   key={entry.id}
                   entry={entry}
-                  basePath="/employee"
                   showTakeWork
                   onTakeWork={handleTakeWork}
+                  onView={(id) => setViewEntryId(id)}
+                  className="cursor-pointer"
                 />
               ))}
             </div>
@@ -161,7 +164,8 @@ export default function EmployeeDashboardPage() {
                 <EntryCard
                   key={entry.id}
                   entry={entry}
-                  basePath="/employee"
+                  onView={(id) => setViewEntryId(id)}
+                  className="cursor-pointer"
                 />
               ))}
             </div>
@@ -181,6 +185,12 @@ export default function EmployeeDashboardPage() {
         }
         confirmLabel="Take Work"
         onConfirm={confirmTakeWork}
+      />
+
+      <ViewEntryModal
+        open={!!viewEntryId}
+        onOpenChange={(open) => !open && setViewEntryId(null)}
+        entryId={viewEntryId}
       />
     </div>
   );

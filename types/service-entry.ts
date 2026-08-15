@@ -39,6 +39,7 @@ export interface ServiceEntry {
 
   // Device
   deviceType: DeviceType;
+  customDeviceType?: string;
   brand: string;
   model: string;
   serialNumber?: string;

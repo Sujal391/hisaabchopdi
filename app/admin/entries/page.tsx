@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Plus, ClipboardList } from "lucide-react";
+import { Plus, ClipboardList, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/common/page-header";
@@ -17,7 +16,12 @@ import { STATUS_LIST } from "@/constants/statuses";
 import { formatRelative } from "@/lib/format";
 import type { EntryStatus } from "@/types";
 
+import { NewEntryModal } from "@/components/features/new-entry-modal";
+import { ViewEntryModal } from "@/components/features/view-entry-modal";
+import { DataPagination } from "@/components/common/data-pagination";
+
 const ALL_TAB = "ALL";
+const PAGE_SIZE = 10;
 
 export default function AdminEntriesPage() {
   const { entries } = useApp();
@@ -25,6 +29,11 @@ export default function AdminEntriesPage() {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<EntryStatus | typeof ALL_TAB>(ALL_TAB);
   const debouncedSearch = useDebounce(search, 250);
+
+  const [newEntryOpen, setNewEntryOpen] = useState(false);
+  const [viewEntryId, setViewEntryId] = useState<string | null>(null);
+  
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filtered = entries.filter((e) => {
     const matchesStatus = activeTab === ALL_TAB || e.status === activeTab;
@@ -40,45 +49,47 @@ export default function AdminEntriesPage() {
     return matchesStatus && matchesSearch;
   });
 
+  const paginatedData = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Service Entries"
         description="Manage all service entries."
         actions={
-          <Button asChild>
-            <Link href="/admin/entries/new">
-              <Plus className="size-4" aria-hidden />
-              New Entry
-            </Link>
+          <Button onClick={() => setNewEntryOpen(true)}>
+            <Plus className="size-4" aria-hidden />
+            New Entry
           </Button>
         }
       />
 
-      {/* Search */}
-      <SearchInput
-        value={search}
-        onChange={setSearch}
-        placeholder="Search by entry number, customer, service…"
-        className="max-w-sm"
-      />
+      <div className="flex flex-col gap-4">
+        {/* Search */}
+        <SearchInput
+          value={search}
+          onChange={(v) => { setSearch(v); setCurrentPage(1); }}
+          placeholder="Search by entry number, customer, service…"
+          className="w-full"
+        />
 
-      {/* Status tabs */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as EntryStatus | typeof ALL_TAB)}>
-        <TabsList className="flex-wrap h-auto gap-1 bg-muted p-1">
-          <TabsTrigger value={ALL_TAB} className="text-xs">
-            All ({entries.length})
-          </TabsTrigger>
-          {STATUS_LIST.map((status) => {
-            const count = entries.filter((e) => e.status === status).length;
-            return (
-              <TabsTrigger key={status} value={status} className="text-xs">
-                {status.replace("_", " ")} ({count})
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
-      </Tabs>
+        {/* Status tabs */}
+        <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v as EntryStatus | typeof ALL_TAB); setCurrentPage(1); }} className="w-full">
+          <TabsList className="flex flex-wrap h-auto gap-1 bg-muted p-1 w-full justify-start">
+            <TabsTrigger value={ALL_TAB} className="text-xs cursor-pointer">
+              All ({entries.length})
+            </TabsTrigger>
+            {STATUS_LIST.map((status) => {
+              const count = entries.filter((e) => e.status === status).length;
+              return (
+                <TabsTrigger key={status} value={status} className="text-xs cursor-pointer">
+                  {status.replace("_", " ")} ({count})
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+        </Tabs>
+      </div>
 
       {/* Results */}
       {filtered.length === 0 ? (
@@ -90,13 +101,19 @@ export default function AdminEntriesPage() {
       ) : isMobile ? (
         /* Mobile — cards */
         <div className="space-y-3">
-          {filtered.map((entry) => (
-            <EntryCard key={entry.id} entry={entry} basePath="/admin" />
+          {paginatedData.map((entry) => (
+            <EntryCard key={entry.id} entry={entry} className="cursor-pointer" onView={setViewEntryId} />
           ))}
+          <DataPagination
+            currentPage={currentPage}
+            totalItems={filtered.length}
+            pageSize={PAGE_SIZE}
+            onPageChange={setCurrentPage}
+          />
         </div>
       ) : (
         /* Desktop — table */
-        <div className="rounded-xl border overflow-hidden">
+        <div className="rounded-xl border overflow-hidden bg-background">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/50">
@@ -111,8 +128,8 @@ export default function AdminEntriesPage() {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {filtered.map((entry) => (
-                <tr key={entry.id} className="interactive-row">
+              {paginatedData.map((entry) => (
+                <tr key={entry.id} className="interactive-row cursor-pointer" onClick={() => setViewEntryId(entry.id)}>
                   <td className="px-4 py-3">
                     <span className="text-mono text-xs font-semibold">{entry.entryNumber}</span>
                   </td>
@@ -138,16 +155,40 @@ export default function AdminEntriesPage() {
                     <p className="text-caption">{formatRelative(entry.createdAt)}</p>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Button variant="ghost" size="xs" asChild>
-                      <Link href={`/admin/entries/${entry.id}`}>View</Link>
+                    <Button variant="ghost" size="xs" onClick={(e) => {
+                      e.stopPropagation();
+                      setViewEntryId(entry.id);
+                    }}>
+                      <Eye className="size-4"/>
                     </Button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <DataPagination
+            currentPage={currentPage}
+            totalItems={filtered.length}
+            pageSize={PAGE_SIZE}
+            onPageChange={setCurrentPage}
+          />
         </div>
       )}
+
+      {/* Modals */}
+      <NewEntryModal
+        open={newEntryOpen}
+        onOpenChange={setNewEntryOpen}
+        onSuccess={(id) => {
+          setViewEntryId(id);
+        }}
+      />
+      
+      <ViewEntryModal
+        open={!!viewEntryId}
+        onOpenChange={(open) => !open && setViewEntryId(null)}
+        entryId={viewEntryId}
+      />
     </div>
   );
 }

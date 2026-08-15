@@ -67,7 +67,7 @@ function NavList({
 /** Brand logo/wordmark */
 function Brand() {
   return (
-    <div className="flex items-center gap-2.5 px-3 py-2">
+    <div className="flex h-14 items-center gap-2.5 px-4">
       <div className="flex size-7 items-center justify-center rounded-lg bg-primary">
         <Wrench className="size-4 text-primary-foreground" aria-hidden />
       </div>
@@ -109,26 +109,13 @@ export function Sidebar({
 
       <Separator />
 
-      {/* User + logout */}
-      <div className="px-2 pb-3 pt-2 space-y-2">
-        <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-muted">
-          <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-semibold">
-            {currentUser.name.charAt(0).toUpperCase()}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-foreground truncate">
-              {currentUser.name}
-            </p>
-            <p className="text-caption truncate capitalize">
-              {currentUser.role.toLowerCase()}
-            </p>
-          </div>
-        </div>
+      {/* Sign Out */}
+      <div className="px-2 pb-3 pt-2">
         <Button
           variant="ghost"
           size="sm"
           onClick={onLogout}
-          className="w-full justify-start text-muted-foreground"
+          className="w-full justify-start text-muted-foreground cursor-pointer"
           aria-label="Sign out"
         >
           Sign Out

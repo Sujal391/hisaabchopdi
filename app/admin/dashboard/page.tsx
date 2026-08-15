@@ -50,14 +50,6 @@ export default function AdminDashboardPage() {
       <PageHeader
         title={`${greeting}, ${currentUser?.name ?? "Admin"}`}
         description="Here's what's happening today."
-        actions={
-          <Button asChild>
-            <Link href="/admin/entries/new">
-              <Plus className="size-4" aria-hidden />
-              New Entry
-            </Link>
-          </Button>
-        }
       />
 
       {/* Summary cards */}
@@ -106,73 +98,76 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Two-column section */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3 items-stretch">
         {/* Today's work — 2/3 width */}
-        <div className="lg:col-span-2 space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold text-foreground">Today's Work</h2>
+        <Card className="lg:col-span-2 flex flex-col">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 space-y-0">
+            <CardTitle className="text-base font-semibold text-foreground">Today's Work</CardTitle>
             <Button variant="ghost" size="sm" asChild>
               <Link href="/admin/entries">View all</Link>
             </Button>
-          </div>
-
-          {todayWork.length === 0 ? (
-            <EmptyState
-              icon={ClipboardList}
-              title="No active entries"
-              description="Create a new entry to get started."
-            />
-          ) : (
-            <div className="rounded-xl border overflow-hidden">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b bg-muted/50">
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">Entry</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground hidden sm:table-cell">Customer</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground hidden md:table-cell">Service</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground hidden lg:table-cell">Assigned</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-muted-foreground">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {todayWork.map((entry) => (
-                    <tr key={entry.id} className="interactive-row">
-                      <td className="px-4 py-3">
-                        <span className="text-mono text-xs font-semibold">{entry.entryNumber}</span>
-                        <p className="text-caption mt-0.5 hidden xs:block">{entry.brand} {entry.model}</p>
-                      </td>
-                      <td className="px-4 py-3 hidden sm:table-cell">
-                        <span className="text-sm text-foreground">{entry.customerName}</span>
-                      </td>
-                      <td className="px-4 py-3 hidden md:table-cell">
-                        <span className="text-sm text-muted-foreground">{entry.serviceType}</span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <StatusBadge status={entry.status} />
-                      </td>
-                      <td className="px-4 py-3 hidden lg:table-cell">
-                        <span className="text-sm text-muted-foreground">
-                          {entry.assignedToName ?? "—"}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <Button variant="ghost" size="xs" asChild>
-                          <Link href={`/admin/entries/${entry.id}`}>View</Link>
-                        </Button>
-                      </td>
+          </CardHeader>
+          <CardContent className="p-0 flex-1 overflow-hidden">
+            {todayWork.length === 0 ? (
+              <EmptyState
+                icon={ClipboardList}
+                title="No active entries"
+                description="Create a new entry to get started."
+              />
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-t bg-muted/50">
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">Entry</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground hidden sm:table-cell">Customer</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground hidden md:table-cell">Service</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground">Status</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground hidden lg:table-cell">Assigned</th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold text-muted-foreground">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                  </thead>
+                  <tbody className="divide-y">
+                    {todayWork.map((entry) => (
+                      <tr key={entry.id} className="interactive-row">
+                        <td className="px-4 py-3">
+                          <span className="text-mono text-xs font-semibold">{entry.entryNumber}</span>
+                          <p className="text-caption mt-0.5 hidden xs:block">{entry.brand} {entry.model}</p>
+                        </td>
+                        <td className="px-4 py-3 hidden sm:table-cell">
+                          <span className="text-sm text-foreground">{entry.customerName}</span>
+                        </td>
+                        <td className="px-4 py-3 hidden md:table-cell">
+                          <span className="text-sm text-muted-foreground">{entry.serviceType}</span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <StatusBadge status={entry.status} />
+                        </td>
+                        <td className="px-4 py-3 hidden lg:table-cell">
+                          <span className="text-sm text-muted-foreground">
+                            {entry.assignedToName ?? "—"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <Button variant="ghost" size="xs" asChild>
+                            <Link href={`/admin/entries/${entry.id}`}>View</Link>
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Recent Activity — 1/3 width */}
-        <div className="space-y-3">
-          <h2 className="text-base font-semibold text-foreground">Recent Activity</h2>
-          <div className="space-y-1">
+        <Card className="flex flex-col">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold text-foreground">Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-1 flex-1">
             {auditLogs.slice(0, 8).map((log) => (
               <div
                 key={log.id}
@@ -189,8 +184,8 @@ export default function AdminDashboardPage() {
             {auditLogs.length === 0 && (
               <p className="text-caption px-3">No recent activity.</p>
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

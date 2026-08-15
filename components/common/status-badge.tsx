@@ -28,12 +28,6 @@ export function StatusBadge({
       className={cn("status-badge", config.cssClass, className)}
       aria-label={`Status: ${config.label}`}
     >
-      {showIcon && (
-        <Icon
-          className="size-3 shrink-0"
-          aria-hidden
-        />
-      )}
       {config.label}
     </span>
   );

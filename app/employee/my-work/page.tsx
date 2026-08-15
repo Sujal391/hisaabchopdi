@@ -1,13 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { ClipboardList } from "lucide-react";
 import { PageHeader } from "@/components/common/page-header";
 import { EntryCard } from "@/components/common/entry-card";
 import { EmptyState } from "@/components/common/empty-state";
+import { ViewEntryModal } from "@/components/features/view-entry-modal";
 import { useApp } from "@/contexts/app-context";
 
 export default function MyWorkPage() {
   const { entries, currentUser } = useApp();
+  const [viewEntryId, setViewEntryId] = useState<string | null>(null);
+
   if (!currentUser) return null;
 
   const myEntries = entries.filter(
@@ -36,7 +40,7 @@ export default function MyWorkPage() {
         ) : (
           <div className="space-y-3">
             {myEntries.map((e) => (
-              <EntryCard key={e.id} entry={e} basePath="/employee" />
+              <EntryCard key={e.id} entry={e} onView={(id) => setViewEntryId(id)} className="cursor-pointer" />
             ))}
           </div>
         )}
@@ -49,11 +53,17 @@ export default function MyWorkPage() {
           </h2>
           <div className="space-y-3">
             {completed.map((e) => (
-              <EntryCard key={e.id} entry={e} basePath="/employee" />
+              <EntryCard key={e.id} entry={e} onView={(id) => setViewEntryId(id)} className="cursor-pointer" />
             ))}
           </div>
         </div>
       )}
+
+      <ViewEntryModal
+        open={!!viewEntryId}
+        onOpenChange={(open) => !open && setViewEntryId(null)}
+        entryId={viewEntryId}
+      />
     </div>
   );
 }
