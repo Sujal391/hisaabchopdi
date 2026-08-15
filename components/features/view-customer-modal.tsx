@@ -1,5 +1,7 @@
 "use client";
 
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { XIcon, ClipboardList } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +12,6 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { EmptyState } from "@/components/common/empty-state";
 import { useApp } from "@/contexts/app-context";
 import { formatDate, formatRelative } from "@/lib/format";
-import { ClipboardList } from "lucide-react";
 
 interface ViewCustomerModalProps {
   open: boolean;
@@ -46,8 +47,8 @@ export function ViewCustomerModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
-        <DialogHeader className="px-6 py-4 border-b shrink-0 flex flex-row items-center justify-between space-y-0 bg-popover">
+      <DialogContent showCloseButton={false} className="max-w-xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
+        <DialogHeader className="px-6 py-4 border-b shrink-0 flex flex-row items-center justify-between space-y-0 sticky top-0 z-10 bg-popover/95 backdrop-blur">
           <div className="flex items-center gap-3">
             <CustomerAvatar name={customer.name} size="md" />
             <div>
@@ -55,6 +56,12 @@ export function ViewCustomerModal({
               <p className="text-xs text-muted-foreground">{customer.mobile}</p>
             </div>
           </div>
+          <DialogPrimitive.Close asChild>
+            <Button variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-foreground">
+              <XIcon className="size-5" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </DialogPrimitive.Close>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pb-4 min-h-0">

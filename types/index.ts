@@ -1,5 +1,5 @@
 // Re-export all types for convenience
-export type { UserRole, SessionUser } from "./auth";
+export type { UserRole, SessionUser, UserAccount } from "./auth";
 export type { Customer } from "./customer";
 export type { Employee, EmployeeStatus } from "./employee";
 export type {

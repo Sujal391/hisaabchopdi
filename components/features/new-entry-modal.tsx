@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Dialog as DialogPrimitive } from "radix-ui";
+import { XIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -114,9 +116,15 @@ export function NewEntryModal({ open, onOpenChange, onSuccess }: NewEntryModalPr
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-xl p-0 overflow-y-auto overflow-x-hidden flex flex-col max-h-[100dvh] sm:max-h-[90vh]">
-        <DialogHeader className="px-6 py-4 border-b shrink-0 sticky top-0 z-10 bg-popover/95 backdrop-blur">
+      <DialogContent showCloseButton={false} className="max-w-xl p-0 overflow-y-auto overflow-x-hidden flex flex-col max-h-[100dvh] sm:max-h-[90vh]">
+        <DialogHeader className="px-6 py-4 border-b shrink-0 flex flex-row items-center justify-between space-y-0 sticky top-0 z-10 bg-popover/95 backdrop-blur">
           <DialogTitle>New Service Entry</DialogTitle>
+          <DialogPrimitive.Close asChild>
+            <Button variant="ghost" size="icon-sm" className="shrink-0 -mr-2 text-muted-foreground hover:text-foreground">
+              <XIcon className="size-5" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </DialogPrimitive.Close>
         </DialogHeader>
         
         <div className="flex-1 px-6">

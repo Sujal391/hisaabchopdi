@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, UserCog } from "lucide-react";
+import { Plus, UserCog, Eye, Power } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -103,7 +103,7 @@ export default function EmployeesPage() {
                       {currentWork.length > 0 ? `${currentWork.length} job(s)` : "—"}
                     </td>
                     <td className="px-4 py-3 hidden lg:table-cell text-caption">{formatDate(emp.createdAt)}</td>
-                    <td className="px-4 py-3 text-right space-x-1">
+                    <td className="px-4 py-3 text-right space-x-1 flex items-center justify-end">
                       <Button
                         variant="ghost"
                         size="xs"
@@ -111,8 +111,9 @@ export default function EmployeesPage() {
                           e.stopPropagation();
                           setViewEmployeeId(emp.id);
                         }}
+                        title="View Employee"
                       >
-                        View
+                        <Eye className="size-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -122,8 +123,9 @@ export default function EmployeesPage() {
                           toggleEmployeeStatus(emp.id);
                           toast(`${emp.name} marked as ${emp.status === "ACTIVE" ? "Inactive" : "Active"}`);
                         }}
+                        title={emp.status === "ACTIVE" ? "Deactivate" : "Activate"}
                       >
-                        {emp.status === "ACTIVE" ? "Deactivate" : "Activate"}
+                        <Power className={`size-4 ${emp.status === "ACTIVE" ? "text-destructive" : "text-status-completed-fg"}`} />
                       </Button>
                     </td>
                   </tr>

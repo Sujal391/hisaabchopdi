@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, ClipboardList, Users, TrendingUp, TrendingDown, Clock, LoaderCircle, CircleCheck, Circle } from "lucide-react";
+import { Plus, ClipboardList, Users, TrendingUp, TrendingDown, Clock, LoaderCircle, CircleCheck, Circle, Eye } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/common/page-header";
@@ -150,7 +150,7 @@ export default function AdminDashboardPage() {
                         </td>
                         <td className="px-4 py-3 text-right">
                           <Button variant="ghost" size="xs" asChild>
-                            <Link href={`/admin/entries/${entry.id}`}>View</Link>
+                            <Link href={`/admin/entries/${entry.id}`}><Eye className="size-4" /></Link>
                           </Button>
                         </td>
                       </tr>

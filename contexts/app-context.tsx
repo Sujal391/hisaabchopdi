@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import type {
   SessionUser,
+  UserAccount,
   ServiceEntry,
   Customer,
   Employee,
@@ -32,6 +33,8 @@ interface AppContextValue {
   // Session
   currentUser: SessionUser | null;
   setCurrentUser: (user: SessionUser | null) => void;
+  authLogin: (mobile: string, password: string) => { success: boolean; error?: string; user?: SessionUser; dest?: string };
+  authRegister: (account: Omit<UserAccount, "id">) => { success: boolean; error?: string; user?: SessionUser; dest?: string };
 
   // Data
   entries: ServiceEntry[];
@@ -104,8 +107,55 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       }
     }
-    return DEFAULT_ADMIN_USER;
+    return null; // start with no one logged in
   });
+
+  const [accounts, setAccounts] = useState<UserAccount[]>(() => {
+    const DEFAULT_ACCOUNTS: UserAccount[] = [
+      {
+        id: "admin-1",
+        name: "Admin",
+        mobile: "9999999999",
+        password: "password123", // basic default admin
+        role: "ADMIN",
+      }
+    ];
+
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("entrybook_accounts");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            // Migrate legacy accounts
+            const migrated = parsed.map((a: any) => {
+              if (!a.mobile) {
+                // If they had the old admin account, map it to the new mobile number
+                if (a.username === "admin") {
+                  return { ...a, mobile: "9999999999" };
+                }
+                // Fallback for other old accounts
+                return { ...a, mobile: a.username || "0000000000" };
+              }
+              return a;
+            });
+            return migrated;
+          }
+        } catch {
+          // ignore
+        }
+      }
+      localStorage.setItem("entrybook_accounts", JSON.stringify(DEFAULT_ACCOUNTS));
+    }
+    return DEFAULT_ACCOUNTS;
+  });
+
+  const saveAccounts = useCallback((newAccounts: UserAccount[]) => {
+    setAccounts(newAccounts);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("entrybook_accounts", JSON.stringify(newAccounts));
+    }
+  }, []);
 
   const setCurrentUser = useCallback((user: SessionUser | null) => {
     setCurrentUserState(user);
@@ -128,6 +178,68 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const addAudit = useCallback((log: Omit<AuditLog, "id">) => {
     setAuditLogs((prev) => [{ id: generateId("audit"), ...log }, ...prev]);
   }, []);
+
+  // ── Authentication ───────────────────────────────────────────
+
+  const authLogin = useCallback(
+    (mobile: string, password: string) => {
+      const account = accounts.find(
+        (a) => a.mobile === mobile && a.password === password
+      );
+
+      if (!account) {
+        return { success: false, error: "Invalid mobile number or password" };
+      }
+
+      const sessionUser: SessionUser = {
+        id: account.id,
+        name: account.name,
+        role: account.role,
+        employeeId: account.employeeId,
+        avatar: account.avatar,
+      };
+
+      setCurrentUser(sessionUser);
+      return {
+        success: true,
+        user: sessionUser,
+        dest: account.role === "ADMIN" ? "/admin/dashboard" : "/employee/dashboard",
+      };
+    },
+    [accounts, setCurrentUser]
+  );
+
+  const authRegister = useCallback(
+    (data: Omit<UserAccount, "id">) => {
+      // check if mobile exists
+      if (accounts.some((a) => a.mobile === data.mobile)) {
+        return { success: false, error: "Mobile number already registered" };
+      }
+
+      const id = generateId("usr");
+      const newAccount: UserAccount = { ...data, id };
+      
+      // If employee, we also want to simulate creating an employee record automatically,
+      // or at least keeping track of it. But for simplicity, we just save the account.
+      saveAccounts([...accounts, newAccount]);
+
+      const sessionUser: SessionUser = {
+        id: newAccount.id,
+        name: newAccount.name,
+        role: newAccount.role,
+        employeeId: newAccount.employeeId,
+        avatar: newAccount.avatar,
+      };
+
+      setCurrentUser(sessionUser);
+      return {
+        success: true,
+        user: sessionUser,
+        dest: newAccount.role === "ADMIN" ? "/admin/dashboard" : "/employee/dashboard",
+      };
+    },
+    [accounts, saveAccounts, setCurrentUser]
+  );
 
   // ── Entry mutations ──────────────────────────────────────────
 
@@ -449,6 +561,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
         createdAt: now(),
       };
       setEmployees((prev) => [employee, ...prev]);
+
+      // Automatically create a user account so they can log in
+      if (data.mobile) {
+        const newAccount: UserAccount = {
+          id: generateId("usr"),
+          name: data.name,
+          mobile: data.mobile,
+          password: data.password || "password123", // default fallback
+          role: "EMPLOYEE",
+          employeeId: employee.id, // Link to the employee record
+        };
+        setAccounts((prev) => {
+          const next = [...prev, newAccount];
+          if (typeof window !== "undefined") {
+            localStorage.setItem("entrybook_accounts", JSON.stringify(next));
+          }
+          return next;
+        });
+      }
+
       return employee;
     },
     []
@@ -485,6 +617,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value: AppContextValue = {
     currentUser,
     setCurrentUser,
+    authLogin,
+    authRegister,
     entries,
     customers,
     employees,

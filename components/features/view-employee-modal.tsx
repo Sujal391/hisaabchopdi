@@ -1,5 +1,6 @@
 "use client";
 
+import { Dialog as DialogPrimitive } from "radix-ui";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +12,7 @@ import { EmptyState } from "@/components/common/empty-state";
 import { useApp } from "@/contexts/app-context";
 import { useToast } from "@/components/common/toast-provider";
 import { formatDate, formatRelative } from "@/lib/format";
-import { Wrench } from "lucide-react";
+import { Wrench, XIcon } from "lucide-react";
 
 interface ViewEmployeeModalProps {
   open: boolean;
@@ -56,7 +57,7 @@ export function ViewEmployeeModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl p-0 overflow-y-auto overflow-x-hidden flex flex-col max-h-[100dvh] sm:max-h-[90vh]">
+      <DialogContent showCloseButton={false} className="max-w-xl p-0 overflow-y-auto overflow-x-hidden flex flex-col max-h-[100dvh] sm:max-h-[90vh]">
         <DialogHeader className="px-6 py-4 border-b shrink-0 flex flex-row items-center justify-between space-y-0 sticky top-0 z-10 bg-popover/95 backdrop-blur">
           <div className="flex items-center gap-3">
             <CustomerAvatar name={employee.name} size="md" />
@@ -70,14 +71,22 @@ export function ViewEmployeeModal({
               <p className="text-xs font-mono text-muted-foreground">{employee.employeeId}</p>
             </div>
           </div>
-          <Button
-            variant={employee.status === "ACTIVE" ? "outline" : "default"}
-            size="sm"
-            onClick={handleToggleStatus}
-            className="shrink-0"
-          >
-            {employee.status === "ACTIVE" ? "Deactivate" : "Activate"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant={employee.status === "ACTIVE" ? "outline" : "default"}
+              size="sm"
+              onClick={handleToggleStatus}
+              className="shrink-0"
+            >
+              {employee.status === "ACTIVE" ? "Deactivate" : "Activate"}
+            </Button>
+            <DialogPrimitive.Close asChild>
+              <Button variant="ghost" size="icon-sm" className="shrink-0 -mr-2 text-muted-foreground hover:text-foreground">
+                <XIcon className="size-5" />
+                <span className="sr-only">Close</span>
+              </Button>
+            </DialogPrimitive.Close>
+          </div>
         </DialogHeader>
 
         <div className="flex-1 px-6">

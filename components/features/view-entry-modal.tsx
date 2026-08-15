@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Phone, ArrowRightLeft, XCircle, Pencil, RotateCcw, Wrench } from "lucide-react";
+import { Dialog as DialogPrimitive } from "radix-ui";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -119,9 +120,9 @@ export function ViewEntryModal({ open, onOpenChange, entryId }: ViewEntryModalPr
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl p-0 overflow-y-auto overflow-x-hidden flex flex-col max-h-[100dvh] sm:max-h-[90vh]">
+      <DialogContent showCloseButton={false} className="max-w-2xl p-0 overflow-y-auto overflow-x-hidden flex flex-col max-h-[100dvh] sm:max-h-[90vh]">
         <DialogHeader className="px-6 py-4 border-b shrink-0 flex flex-row items-center justify-between space-y-0 sticky top-0 z-10 bg-popover/95 backdrop-blur">
-            <div className="flex flex-col space-y-1">
+            <div className="flex flex-col space-y-1 pr-6">
               <DialogTitle className="flex items-center gap-3 flex-wrap">
                 <span className="text-mono text-xl font-bold">{entry.entryNumber}</span>
                 <StatusBadge status={entry.status} />
@@ -130,6 +131,12 @@ export function ViewEntryModal({ open, onOpenChange, entryId }: ViewEntryModalPr
                 {entry.brand} {entry.model}
               </p>
             </div>
+            <DialogPrimitive.Close asChild>
+              <Button variant="ghost" size="icon-sm" className="shrink-0 -mr-2">
+                <XCircle className="size-5" />
+                <span className="sr-only">Close</span>
+              </Button>
+            </DialogPrimitive.Close>
         </DialogHeader>
 
           <div className="flex-1 px-6">
