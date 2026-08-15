@@ -75,19 +75,21 @@ export default function AdminEntriesPage() {
 
         {/* Status tabs */}
         <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v as EntryStatus | typeof ALL_TAB); setCurrentPage(1); }} className="w-full">
-          <TabsList className="flex flex-wrap h-auto gap-1 bg-muted p-1 w-full justify-start">
-            <TabsTrigger value={ALL_TAB} className="text-xs cursor-pointer">
-              All ({entries.length})
-            </TabsTrigger>
-            {STATUS_LIST.map((status) => {
-              const count = entries.filter((e) => e.status === status).length;
-              return (
-                <TabsTrigger key={status} value={status} className="text-xs cursor-pointer">
-                  {status.replace("_", " ")} ({count})
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
+          <div className="w-full overflow-x-auto no-scrollbar">
+            <TabsList className="flex flex-nowrap h-auto gap-1 bg-muted p-1 w-max min-w-full justify-start">
+              <TabsTrigger value={ALL_TAB} className="text-xs cursor-pointer shrink-0 whitespace-nowrap">
+                All ({entries.length})
+              </TabsTrigger>
+              {STATUS_LIST.map((status) => {
+                const count = entries.filter((e) => e.status === status).length;
+                return (
+                  <TabsTrigger key={status} value={status} className="text-xs cursor-pointer shrink-0 whitespace-nowrap">
+                    {status.replace("_", " ")} ({count})
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </div>
         </Tabs>
       </div>
 

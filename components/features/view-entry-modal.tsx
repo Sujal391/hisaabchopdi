@@ -203,15 +203,18 @@ export function ViewEntryModal({ open, onOpenChange, entryId }: ViewEntryModalPr
               </div>
             </div>
             <DialogFooter className="px-6 py-4 border-t sticky bottom-0 z-10 bg-popover/95 backdrop-blur mt-auto flex-row justify-end items-center gap-2">
+              <Button variant="outline" size="lg" onClick={() => onOpenChange(false)} className="cursor-pointer">
+                Close
+              </Button>
               {/* Employee Actions */}
               {isEmployee && entry.status === "NOT_STARTED" && !isMyEntry && (
-                <Button size="xs" onClick={handleTakeWork}>
+                <Button size="lg" onClick={handleTakeWork}>
                   <Wrench className="size-3.5" aria-hidden />
                   Take Work
                 </Button>
               )}
               {isEmployee && isMyEntry && allowedNextStatuses.length > 0 && (
-                <Button size="xs" onClick={() => setStatusOpen(true)}>
+                <Button size="lg" onClick={() => setStatusOpen(true)}>
                   Update Status
                 </Button>
               )}

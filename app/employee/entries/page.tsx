@@ -68,16 +68,18 @@ export default function EmployeeEntriesPage() {
           onValueChange={(v) => { setActiveTab(v as EntryStatus | typeof ALL_TAB); setCurrentPage(1); }}
           className="w-full"
         >
-          <TabsList className="flex flex-wrap h-auto gap-1 bg-muted p-1 w-full justify-start">
-            <TabsTrigger value={ALL_TAB} className="text-xs cursor-pointer">
-              All ({entries.length})
-            </TabsTrigger>
-            {STATUS_LIST.map((s) => (
-              <TabsTrigger key={s} value={s} className="text-xs cursor-pointer">
-                {s.replace("_", " ")} ({entries.filter((e) => e.status === s).length})
+          <div className="w-full overflow-x-auto no-scrollbar">
+            <TabsList className="flex flex-nowrap h-auto gap-1 bg-muted p-1 w-max min-w-full justify-start">
+              <TabsTrigger value={ALL_TAB} className="text-xs cursor-pointer shrink-0 whitespace-nowrap">
+                All ({entries.length})
               </TabsTrigger>
-            ))}
-          </TabsList>
+              {STATUS_LIST.map((s) => (
+                <TabsTrigger key={s} value={s} className="text-xs cursor-pointer shrink-0 whitespace-nowrap">
+                  {s.replace("_", " ")} ({entries.filter((e) => e.status === s).length})
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
         </Tabs>
       </div>
 
